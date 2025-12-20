@@ -58,3 +58,20 @@ $HOME/
 *.bak.*
 # Never commit personal equation data
 /data/
+
+# Backup / temp files
+*.bak
+*.bak_*
+*.bak.*
+*~
+__pycache__/
+*.pyc
+
+# Local env files
+.env
+eli_voice/.env
+
+# Never commit personal equation data
+/data/
+data/
+
