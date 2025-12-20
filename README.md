@@ -21,3 +21,4 @@ from xichi_ai.validation.validator import validate_equations_json, validate_symb
 validate_equations_json("data/cache/equations_llm.json")
 validate_symbols_yaml("data/cache/symbols.yaml")
 ```
+Eli can also control pc interactions and act out commands such as, web searches, opening applications, creating documents and entering content in it's current form.
