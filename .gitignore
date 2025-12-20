@@ -51,3 +51,10 @@ $HOME/
 *.bak
 *.bak_*
 *.bak.*
+
+# Backup files
+*.bak
+*.bak_*
+*.bak.*
+# Never commit personal equation data
+/data/
