@@ -75,3 +75,24 @@ eli_voice/.env
 /data/
 data/
 
+
+*.bak
+*.pyc
+/data/
+
+# local outputs / reports
+eli_doctor_report.txt
+
+# accidental files that should never exist in repo
+os
+pyttsx3
+
+# scratch / legacy modelfiles (keep canonical in models/)
+ModelfileELI*
+eli-voice
+
+# ollama raw dumps (contain blob sha256 IDs that trip sensitive scanners)
+models/*latest.raw
+models/ollama_show_eli-voice.txt
+models/ollama_show_eli-router.txt
+models/MODELFILE_SHA256.txt
