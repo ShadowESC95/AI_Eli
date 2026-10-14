@@ -45,3 +45,8 @@ cas_report.md
 cas_verify.md
 recovery_notes.md
 out/
+
+# What ELI remembers when run from the project folder
+state.json
+memory.jsonl
+eli_core/values.json

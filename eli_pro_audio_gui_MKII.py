@@ -31,7 +31,9 @@ from PyQt6.QtWidgets import (
 
 # --- Resolve project root (best effort) ---
 HERE = Path(__file__).resolve()
-DEFAULT_ROOT = Path(os.environ.get("ELI_ROOT", str(HERE.parent))).expanduser().resolve()
+from eli_tools import config as eli_config  # noqa: E402
+
+DEFAULT_ROOT = Path(os.environ.get("ELI_ROOT") or eli_config.home()).expanduser().resolve()
 
 def _safe_import_executor():
     try:

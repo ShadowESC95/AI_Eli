@@ -6,7 +6,9 @@ import os
 import time
 from typing import Any, Dict
 
-STATE_FILE = Path(os.environ.get("ELI_STATE_FILE") or Path.home() / ".eli_state.json").expanduser()
+from eli_tools import config as eli_config
+
+STATE_FILE = eli_config.state_file()
 
 DEFAULT_STATE: Dict[str, Any] = {
     "user": os.environ.get("ELI_USER_NAME", "").strip(),

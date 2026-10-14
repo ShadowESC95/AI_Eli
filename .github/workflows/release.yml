@@ -49,16 +49,18 @@ jobs:
           for i in $(seq 1 30); do curl -fs http://127.0.0.1:11434/api/tags >/dev/null && break; (ollama serve >/tmp/ollama.log 2>&1 &); sleep 2; done
           ollama pull qwen2.5:0.5b
 
-      - name: Selftest (offscreen with speech and chat, then on a real X display)
+      - name: Selftest with the app read-only, as it is inside the AppImage (offscreen with speech and chat, then a real X display)
         run: |
           espeak-ng -w build/speech.wav "open the calculator and play some music"
-          ELI_SELFTEST_WAV="$PWD/build/speech.wav" ELI_SELFTEST_CHAT=1 dist/AI_Eli/AI_Eli --selftest
+          chmod -R a-w dist/AI_Eli
+          AI_ELI_SELFTEST_WAV="$PWD/build/speech.wav" AI_ELI_SELFTEST_CHAT=1 dist/AI_Eli/AI_Eli --selftest
           xvfb-run -a env QT_QPA_PLATFORM=xcb dist/AI_Eli/AI_Eli --selftest
+          chmod -R u+w dist/AI_Eli
 
       - name: AppImage
         run: |
           bash packaging/build_appimage.sh "${GITHUB_REF_NAME#v}"
-          ELI_SELFTEST_WAV="$PWD/build/speech.wav" ./dist/AI_Eli-*.AppImage --appimage-extract-and-run --selftest
+          AI_ELI_SELFTEST_WAV="$PWD/build/speech.wav" AI_ELI_SELFTEST_CHAT=1 ./dist/AI_Eli-*.AppImage --appimage-extract-and-run --selftest
           cd dist && sha256sum AI_Eli-*.AppImage > SHA256SUMS.txt && cat SHA256SUMS.txt
 
       - uses: actions/upload-artifact@v4

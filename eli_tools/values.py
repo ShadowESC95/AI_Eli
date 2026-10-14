@@ -14,7 +14,8 @@ from pathlib import Path
 import os
 
 def _root() -> Path:
-    return Path(os.environ.get("ELI_ROOT") or Path(__file__).resolve().parents[1]).resolve()
+    from eli_tools import config as eli_config
+    return Path(os.environ.get("ELI_ROOT") or eli_config.home()).resolve()
 
 VALUES_PATH = (_root() / "eli_core" / "values.json").resolve()
 

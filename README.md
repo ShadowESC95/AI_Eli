@@ -32,7 +32,7 @@ pip install -r requirements.txt
 ollama pull <any-model>
 ```
 
-Then tell ELI which model to use. Put settings in `~/.eli_config` as `KEY=VALUE` lines, or export them:
+Then tell ELI which model to use. Put settings in `~/.config/AI_Eli/config` as `KEY=VALUE` lines, or export them:
 
 ```
 ELI_MODEL=<any-model>
@@ -62,9 +62,11 @@ To summarise PDFs, put them in `data/input` and say "analyse my PDFs". The summa
 
 ## Settings
 
+Put these in `~/.config/AI_Eli/config` as `KEY=VALUE` lines, or export them. The AppImage reads only that file and variables named with `AI_ELI_` in place of `ELI_` (`AI_ELI_MODEL=llama3.2`); it ignores plain `ELI_` variables, which other ELI versions use.
+
 | Setting | Default | |
 |---|---|---|
-| `ELI_MODEL` | none | Ollama model for chat (also read from `ELI_CHAT_MODEL` or `OLLAMA_MODEL`) |
+| `ELI_MODEL` | the newest chat model in Ollama | Ollama model for chat (also read from `ELI_CHAT_MODEL` or `OLLAMA_MODEL`) |
 | `ELI_ROUTER_MODEL` | `ELI_MODEL` | a smaller model for working out commands |
 | `OLLAMA_BASE_URL` | `http://127.0.0.1:11434` | where Ollama is |
 | `ELI_USER_NAME` | none | what ELI calls you |
@@ -78,9 +80,9 @@ To summarise PDFs, put them in `data/input` and say "analyse my PDFs". The summa
 | `ELI_TTS_ENGINE` | `espeak` | or `piper` |
 | `ELI_PIPER_MODEL` | `eli_tools/voices/en_US-amy-medium.onnx` | Piper voice file |
 | `ELI_ARTIFACTS_DIR` | `./artifacts` | where documents and summaries go |
-| `ELI_CONFIG` | `~/.eli_config` | another settings file |
+| `ELI_CONFIG` | `~/.config/AI_Eli/config` | another settings file |
 
-What ELI remembers is kept in `data/`, `artifacts/`, `~/.eli_state.json` and `~/.eli_memory.jsonl`, none of which go into git.
+What ELI remembers is kept in `data/`, `artifacts/`, `state.json` and `memory.jsonl` in the project folder (in `~/.local/share/AI_Eli` for the AppImage), none of which go into git.
 
 ## Licence
 

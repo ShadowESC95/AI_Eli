@@ -11,7 +11,8 @@ from typing import Any, Dict, Optional
 # Back-compat: some code expects this name to exist.
 MEMORY_FILE = "eli_memory.json"
 
-DEFAULT_CONFIG_PATH = Path(os.path.expanduser("~/.eli_config"))
+# AI_Eli's own settings file (other ELI versions keep theirs elsewhere)
+DEFAULT_CONFIG_PATH = Path(os.environ.get("XDG_CONFIG_HOME") or Path.home() / ".config") / "AI_Eli" / "config"
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 
 def _parse_kv(text: str) -> Dict[str, str]:
@@ -49,7 +50,7 @@ def load_eli_config(path: str | None = None) -> Dict[str, Any]:
     Priority:
       1) explicit 'path' argument
       2) $ELI_CONFIG
-      3) ~/.eli_config
+      3) ~/.config/AI_Eli/config
       4) {} if none found / unreadable
 
     Values already in the environment win over the file.
@@ -140,6 +141,16 @@ def ollama_base() -> str:
 def home() -> Path:
     """Where ELI keeps its files: ELI_HOME (the packaged app sets ~/.local/share/AI_Eli), else the project folder."""
     return Path(os.environ.get("ELI_HOME") or PROJECT_ROOT).expanduser()
+
+
+def state_file() -> Path:
+    """Recent chat turns: ELI_STATE_FILE, else state.json in ELI's folder."""
+    return Path(os.environ.get("ELI_STATE_FILE") or home() / "state.json").expanduser()
+
+
+def memory_file() -> Path:
+    """The long-term memory log: ELI_MEMORY_FILE, else memory.jsonl in ELI's folder."""
+    return Path(os.environ.get("ELI_MEMORY_FILE") or home() / "memory.jsonl").expanduser()
 
 
 def artifacts_dir() -> Path:

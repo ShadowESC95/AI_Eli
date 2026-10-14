@@ -192,7 +192,7 @@ ROUTER_MODEL = os.environ.get("ELI_ROUTER_MODEL") or CHAT_MODEL  # can be smalle
 
 if not CHAT_MODEL:
     raise SystemExit("No model found. Install Ollama from https://ollama.com and pull a chat model "
-                     "(`ollama pull <name>`), or set ELI_MODEL in ~/.eli_config or the environment.")
+                     "(`ollama pull <name>`), or set ELI_MODEL in ~/.config/AI_Eli/config or the environment.")
 import requests
 
 HTTP = requests.Session()

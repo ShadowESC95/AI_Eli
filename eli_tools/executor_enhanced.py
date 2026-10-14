@@ -213,13 +213,13 @@ ARTIFACTS_DIR = eli_config.artifacts_dir()
 SUPPORTED_ACTIONS = ['CHAT', 'CHECK_CHRONAL_ALIGNMENT', 'CREATE_DOCUMENT', 'DATA_FABRICATOR', 'DOC_GENERATE', 'HELP', 'LIST_CAPABILITIES', 'MEMORY_RECALL', 'MEMORY_STORE', 'OPEN_APP', 'OPEN_AUDIO_SETTINGS', 'OPEN_BROWSER', 'OPEN_COMMUNICATION_HUB', 'OPEN_FILE_SYSTEM', 'OPEN_MEDIA_HUB', 'OPEN_NETWORK_BROWSER', 'OPEN_URL', 'PERSONA_LOCK_CLEAR', 'PERSONA_LOCK_SET', 'PERSONA_LOCK_STATUS', 'PROACTIVE_START', 'PROACTIVE_STATUS', 'PROACTIVE_STOP', 'READ_FILE', 'RUN_CMD', 'TIME', 'WRITE_NOTE']
 
 
-STATE_PATH = Path(os.environ.get("ELI_STATE_FILE", str(Path.home() / ".eli_state.json")))
+STATE_PATH = eli_config.state_file()
 
 # Short-term conversation continuity
 MAX_HISTORY_MESSAGES = int(os.environ.get("ELI_MAX_HISTORY_MESSAGES", "32"))
 
 # Long-term memory store (simple deterministic archive, no embeddings)
-MEMORY_PATH = Path(os.environ.get("ELI_MEMORY_FILE", str(Path.home() / ".eli_memory.jsonl")))
+MEMORY_PATH = eli_config.memory_file()
 
 # Lock behavior: if true, refuse CHAT when verification fails
 LOCK_ENFORCED = os.environ.get("ELI_LOCK_ENFORCED", "1").strip() not in ("0", "false", "False", "no", "NO")

@@ -808,9 +808,13 @@ class ELIEntropicGUI(QMainWindow):
         try:
             error_data = json.loads(error_json)
             execution_id = error_data.get('execution_id', 'UNKNOWN')
-            error_msg = (error_data.get('error') or error_data.get('response') or error_data.get('message') or 'Unknown error')
-            
-            self.add_system_message("ERROR", f"Execution {execution_id} failed: {error_msg}", "#bf616a")
+            # A result that explains itself (no model, Ollama not running...) is shown as it is
+            readable = error_data.get('content') or error_data.get('response')
+            if readable:
+                self.add_system_message("ERROR", readable, "#bf616a")
+            else:
+                error_msg = error_data.get('error') or error_data.get('message') or 'Unknown error'
+                self.add_system_message("ERROR", f"Execution {execution_id} failed: {error_msg}", "#bf616a")
             QTimer.singleShot(3000, lambda: self.set_system_status("OPERATIONAL"))
             
         except:
@@ -957,8 +961,11 @@ class ELIEntropicGUI(QMainWindow):
         
         # Save conversation log
         if self.conversation_log:
-            log_file = f"eli_conversation_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
+            from eli_tools import config as eli_config
+            conv_dir = eli_config.artifacts_dir() / "conversations"
+            log_file = str(conv_dir / f"eli_conversation_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json")
             try:
+                conv_dir.mkdir(parents=True, exist_ok=True)
                 with open(log_file, 'w') as f:
                     json.dump(self.conversation_log, f, indent=2)
                 print(f"[ELI] Conversation log saved to {log_file}" if f"[ELI] Conversation log saved to {log_file}" not in (None, "", "None") else "")
