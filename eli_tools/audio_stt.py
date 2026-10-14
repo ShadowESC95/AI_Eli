@@ -1,0 +1,151 @@
+"""Audio Speech-to-Text module for ELI"""
+
+import speech_recognition as sr
+import threading
+import queue
+import time
+import os
+
+class ELIAudioSTT:
+    """Entropic Logical Interpreter Audio Input System"""
+    
+    def __init__(self):
+        self.recognizer = sr.Recognizer()
+        self.microphone = sr.Microphone()
+        self.is_listening = False
+        self.audio_queue = queue.Queue()
+        self.last_transcript = ""
+        
+        # Calibrate for ambient noise
+        print("[AUDIO] Calibrating microphone for ambient noise...")
+        with self.microphone as source:
+            self.recognizer.adjust_for_ambient_noise(source, duration=1)
+        print("[AUDIO] Microphone calibration complete")
+    
+    def start_listening(self, callback=None):
+        """Start continuous listening in background thread."""
+        if self.is_listening:
+            print("[AUDIO] Already listening")
+            return False
+        
+        self.is_listening = True
+        self.callback = callback
+        
+        # Start listening thread
+        self.listen_thread = threading.Thread(target=self._listen_loop, daemon=True)
+        self.listen_thread.start()
+        
+        print("[AUDIO] Started listening for voice commands")
+        return True
+    
+    def stop_listening(self):
+        """Stop continuous listening."""
+        self.is_listening = False
+        print("[AUDIO] Stopped listening")
+    
+    def _listen_loop(self):
+        """Main listening loop."""
+        with self.microphone as source:
+            print("[AUDIO] Microphone ready")
+            
+            while self.is_listening:
+                try:
+                    # Listen for audio
+                    print("[AUDIO] Listening... (say 'ELI' to activate)")
+                    audio = self.recognizer.listen(source, timeout=5, phrase_time_limit=5)
+                    
+                    # Try to recognize speech
+                    try:
+                        transcript = self.recognizer.recognize_google(audio).lower()
+                        print(f"[AUDIO] Heard: {transcript}")
+                        
+                        # Check for wake word
+                        if "eli" in transcript or "hey eli" in transcript:
+                            print("[AUDIO] Wake word detected! Listening for command...")
+                            
+                            # Listen for command
+                            command_audio = self.recognizer.listen(source, timeout=3, phrase_time_limit=10)
+                            command_text = self.recognizer.recognize_google(command_audio)
+                            
+                            print(f"[AUDIO] Command: {command_text}")
+                            self.last_transcript = command_text
+                            
+                            # Call callback if provided
+                            if self.callback:
+                                self.callback(command_text)
+                            
+                        # Store in queue
+                        self.audio_queue.put(transcript)
+                        
+                    except sr.UnknownValueError:
+                        print("[AUDIO] Could not understand audio")
+                    except sr.RequestError as e:
+                        print(f"[AUDIO] Recognition error: {e}")
+                    
+                except sr.WaitTimeoutError:
+                    # Timeout, continue listening
+                    continue
+                except Exception as e:
+                    print(f"[AUDIO] Error: {e}")
+                    time.sleep(1)
+    
+    def listen_once(self, timeout=5):
+        """Listen once and return transcript."""
+        try:
+            with self.microphone as source:
+                print("[AUDIO] Listening for command...")
+                audio = self.recognizer.listen(source, timeout=timeout, phrase_time_limit=10)
+                
+                transcript = self.recognizer.recognize_google(audio)
+                print(f"[AUDIO] Command: {transcript}")
+                self.last_transcript = transcript
+                
+                return transcript
+                
+        except sr.UnknownValueError:
+            print("[AUDIO] Could not understand audio")
+            return None
+        except sr.RequestError as e:
+            print(f"[AUDIO] Recognition error: {e}")
+            return None
+        except sr.WaitTimeoutError:
+            print("[AUDIO] Listening timeout")
+            return None
+        except Exception as e:
+            print(f"[AUDIO] Error: {e}")
+            return None
+    
+    def get_last_transcript(self):
+        """Get last successful transcript."""
+        return self.last_transcript
+    
+    def clear_queue(self):
+        """Clear audio queue."""
+        while not self.audio_queue.empty():
+            self.audio_queue.get()
+
+# Global instance
+_audio_stt_instance = None
+
+def get_audio_stt():
+    """Get singleton audio STT instance."""
+    global _audio_stt_instance
+    if _audio_stt_instance is None:
+        _audio_stt_instance = ELIAudioSTT()
+    return _audio_stt_instance
+
+def start_audio_listening(callback=None):
+    """Start audio listening."""
+    return get_audio_stt().start_listening(callback)
+
+def stop_audio_listening():
+    """Stop audio listening."""
+    get_audio_stt().stop_listening()
+
+def listen_for_command(timeout=5):
+    """Listen for a single command."""
+    return get_audio_stt().listen_once(timeout)
+
+def get_last_command():
+    """Get last recognized command."""
+    return get_audio_stt().get_last_transcript()

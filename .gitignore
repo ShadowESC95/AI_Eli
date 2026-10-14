@@ -1,98 +1,20 @@
-# --- Secrets / env ---
-.env
-.env.*
-*.key
-*.pem
-*token*
-*secret*
-
-# --- Python ---
+# Python
 __pycache__/
 *.py[cod]
-*.so
-*.egg-info/
-.eggs/
-.pytest_cache/
-.mypy_cache/
-ruff_cache/
-.cache/
-
-# --- Virtualenvs / local envs ---
-.venv/
+.venv*/
 venv/
-env/
-.eli_full_venv/
-eli_voice/.venv/
+.pytest_cache/
 
-# --- Logs / outputs ---
-*.log
-out/
-eli_docs/
-data/
-_ollama_backups/
-_bak/
-notes/
-*.wav
-*.mp3
-
-# --- OS / editor junk ---
-.DS_Store
-Thumbs.db
-.vscode/
-.idea/
-
-# --- Weird accidental folder name ---
-$HOME/
-
-# Never commit personal equation data
-/data/
-
-# Backup files
-*.bak
-*.bak_*
-*.bak.*
-
-# Backup files
-*.bak
-*.bak_*
-*.bak.*
-# Never commit personal equation data
-/data/
-
-# Backup / temp files
-*.bak
-*.bak_*
-*.bak.*
-*~
-__pycache__/
-*.pyc
-
-# Local env files
+# settings and your own data
 .env
-eli_voice/.env
-
-# Never commit personal equation data
-/data/
+.eli_config
+_private/
 data/
+artifacts/
+logs/
+ingest/
+eli_memory.sqlite3*
+eli_conversation_*.json
 
-
-*.bak
-*.pyc
-/data/
-
-# local outputs / reports
-eli_doctor_report.txt
-
-# accidental files that should never exist in repo
-os
-pyttsx3
-
-# scratch / legacy modelfiles (keep canonical in models/)
-ModelfileELI*
-eli-voice
-
-# ollama raw dumps (contain blob sha256 IDs that trip sensitive scanners)
-models/*latest.raw
-models/ollama_show_eli-voice.txt
-models/ollama_show_eli-router.txt
-models/MODELFILE_SHA256.txt
+# downloaded voices (scripts/get_piper_voice.sh)
+eli_tools/voices/
