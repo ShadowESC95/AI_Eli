@@ -18,3 +18,28 @@ eli_conversation_*.json
 
 # downloaded voices (scripts/get_piper_voice.sh)
 eli_tools/voices/
+
+# Xi-Chi framework: its code, prompts, papers and anything made from them stay private
+*[Xx][Ii][Cc][Hh][Ii]*
+*[Xx][Ii][_-][Cc][Hh][Ii]*
+*[Xx][Ii] [Cc][Hh][Ii]*
+*[Xx][Ii]–[Cc][Hh][Ii]*
+*Ξ*
+*ξ*
+*χ*
+*Χ*
+promptpacks/
+extract_equations*.py
+make_conflict_table*.py
+equations*.json
+equations*.csv
+conflict_table*.csv
+symbols.yaml
+master_equations.tex
+master_ledger.tex
+derived_el.tex
+weak_forms.md
+cas_report.md
+cas_verify.md
+recovery_notes.md
+out/
