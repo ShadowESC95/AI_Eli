@@ -1,9 +1,11 @@
 # PyInstaller recipe for the AI_Eli app. From the repo root: pyinstaller packaging/ai_eli.spec
+import sys
 from pathlib import Path
 
 from PyInstaller.utils.hooks import collect_all, collect_submodules
 
 ROOT = Path(SPECPATH).parent
+sys.path.insert(0, str(ROOT))  # the collect_* helpers below must be able to import eli_tools
 
 datas, binaries, hiddenimports = [], [], []
 for package in ("faster_whisper", "ctranslate2", "onnxruntime", "av", "tokenizers", "speech_recognition", "pyttsx3"):
@@ -15,6 +17,8 @@ for package in ("faster_whisper", "ctranslate2", "onnxruntime", "av", "tokenizer
 # scripts in eli_tools that run on import (listeners, agents) are not part of the app
 scripts = {"eli_tools.eli_listen", "eli_tools.eli_agent", "eli_tools.eli_clipboard_agent"}
 hiddenimports += collect_submodules("eli_tools", filter=lambda name: name not in scripts)
+if "eli_tools.proactive_daemon" not in hiddenimports:
+    raise SystemExit("AI_Eli's modules (eli_tools) were not collected into the bundle")
 hiddenimports += ["Eli_PC_Control2_Working", "eli_pro_audio_gui_MKI", "eli_pro_audio_gui_MKII",
                   "pyaudio", "pypdf", "sounddevice", "soundfile", "numpy", "requests", "ollama", "pandas"]
 
