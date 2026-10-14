@@ -576,9 +576,10 @@ def chat(message: str, *, model: Optional[str] = None) -> Dict[str, Any]:
         )
         return {"ok": False, "action": "CHAT", "error": f"lockdown:{reason}", "content": content, "response": content}
 
-    model = (model or DEFAULT_CHAT_MODEL).strip()
+    model = (model or DEFAULT_CHAT_MODEL or eli_config.chat_model()).strip()
     if not model:
-        content = "No model set. Set ELI_MODEL to an Ollama model you have pulled (see `ollama list`)."
+        content = ("No model found. Install Ollama from https://ollama.com, then pull a chat model with "
+                   "`ollama pull <name>` (or set ELI_MODEL to one you have).")
         return {"ok": False, "action": "CHAT", "error": "no_model", "content": content, "response": content}
 
     # Build messages with history for continuity (NO extra system prompt; Modelfile persona stays in charge)
@@ -609,6 +610,14 @@ def chat(message: str, *, model: Optional[str] = None) -> Dict[str, Any]:
         _save_state(st)
 
         return {"ok": True, "action": "CHAT", "model": model, "content": content, "response": content}
+    except requests.exceptions.ConnectionError as e:
+        msg2 = (f"Ollama is not running at {OLLAMA_HOST}. Install it from https://ollama.com, start it, "
+                "and pull a chat model with `ollama pull <name>`.")
+        return {"ok": False, "action": "CHAT", "model": model, "error": repr(e), "content": msg2, "response": msg2}
+    except requests.exceptions.HTTPError as e:
+        msg2 = (f"Ollama could not run {model}: {e.response.text[:200] if e.response is not None else e}. "
+                f"If it is not pulled yet: `ollama pull {model}`.")
+        return {"ok": False, "action": "CHAT", "model": model, "error": repr(e), "content": msg2, "response": msg2}
     except Exception as e:
         msg2 = "Chat failed."
         return {"ok": False, "action": "CHAT", "model": model, "error": repr(e), "content": msg2, "response": msg2}

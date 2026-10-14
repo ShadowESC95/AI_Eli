@@ -6,8 +6,10 @@ from pathlib import Path
 from datetime import datetime
 from typing import Dict, Any, List
 
-ROOT = Path(__file__).resolve().parent.parent
-ART = ROOT / "artifacts"
+from eli_tools import config as eli_config
+
+ROOT = eli_config.home()
+ART = eli_config.artifacts_dir()
 
 TEMPLATES = {
     "helmholtz": "python3 -m eli_tools.toy_helmholtz --freq {freq} --mesh {mesh}",

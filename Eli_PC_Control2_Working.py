@@ -29,11 +29,13 @@ def _resolve_user_path(raw: str) -> str:
 from concurrent.futures import ThreadPoolExecutor
 import shlex
 
-ROOT = Path(__file__).resolve().parent
-if str(ROOT) not in sys.path:
-    sys.path.insert(0, str(ROOT))
+CODE_DIR = Path(__file__).resolve().parent
+if str(CODE_DIR) not in sys.path:
+    sys.path.insert(0, str(CODE_DIR))
 
 from eli_tools import config as eli_config  # loads ~/.eli_config (or $ELI_CONFIG) into the environment
+
+ROOT = eli_config.home()  # where ELI keeps its files (the project folder, or ELI_HOME)
 
 DATA_DIR = ROOT / "data"
 MEMORY_DIR = DATA_DIR / "memory"
@@ -105,9 +107,8 @@ REQUIRE_ARM = (os.environ.get('ELI_REQUIRE_ARM','1').strip() != '0')
 
 
 # Ensure project root importable when running from subdir
-ROOT = Path(__file__).resolve().parent
-if str(ROOT) not in sys.path:
-    sys.path.insert(0, str(ROOT))
+if str(CODE_DIR) not in sys.path:
+    sys.path.insert(0, str(CODE_DIR))
 
 # ----------------------------
 # Local storage (notes/skills/memory)
@@ -190,8 +191,8 @@ CHAT_MODEL   = eli_config.chat_model()
 ROUTER_MODEL = os.environ.get("ELI_ROUTER_MODEL") or CHAT_MODEL  # can be smaller/faster model
 
 if not CHAT_MODEL:
-    raise SystemExit("No model configured. Set ELI_MODEL to an Ollama model you have pulled (see `ollama list`), "
-                     "in ~/.eli_config or the environment.")
+    raise SystemExit("No model found. Install Ollama from https://ollama.com and pull a chat model "
+                     "(`ollama pull <name>`), or set ELI_MODEL in ~/.eli_config or the environment.")
 import requests
 
 HTTP = requests.Session()
@@ -1114,7 +1115,7 @@ def _write_note_builtin(args: dict) -> dict:
         import os, re, time, subprocess
         from pathlib import Path
 
-        root = Path(__file__).resolve().parent
+        root = ROOT
         doc_dir = Path(os.environ.get("ELI_DOC_DIR", str(root / "eli_docs"))).expanduser()
         doc_dir.mkdir(parents=True, exist_ok=True)
 
@@ -1163,7 +1164,7 @@ def _append_note_builtin(args: dict) -> dict:
         import os, re, time, subprocess
         from pathlib import Path
 
-        root = Path(__file__).resolve().parent
+        root = ROOT
         doc_dir = Path(os.environ.get("ELI_DOC_DIR", str(root / "eli_docs"))).expanduser()
         doc_dir.mkdir(parents=True, exist_ok=True)
 
@@ -1326,7 +1327,7 @@ def _recall_memory_builtin(args: dict) -> dict:
         from pathlib import Path
 
         limit = int(args.get("limit", 20))
-        root = Path(__file__).resolve().parent
+        root = ROOT
         memory_log = root / "data" / "memory" / "utterances.jsonl"
 
         if not memory_log.exists():
@@ -3932,7 +3933,7 @@ def _eli_tts_echo(_text: str) -> None:
             from pathlib import Path
             import json
             from datetime import datetime
-            root = Path(__file__).resolve().parent
+            root = ROOT
             logp = root / "data" / "logs" / "tts.jsonl"
             logp.parent.mkdir(parents=True, exist_ok=True)
             rec = {"ts": datetime.now().isoformat(timespec="seconds"), "text": _text}
@@ -4000,7 +4001,7 @@ def _speak_raw(text: str) -> None:
         print(f"[ELI-SAY] {t}", flush=True)
         if os.environ.get("ELI_TTS_LOG", "1") != "0":
             try:
-                root = Path(__file__).resolve().parent
+                root = ROOT
                 logp = root / "data" / "logs" / "tts.jsonl"
                 logp.parent.mkdir(parents=True, exist_ok=True)
                 rec = {"ts": datetime.now().isoformat(timespec="seconds"), "text": t}
@@ -4020,7 +4021,7 @@ def _speak_raw(text: str) -> None:
         engine = env.get("ELI_TTS_ENGINE", "espeak").strip().lower()
         if engine == "piper":
             model = os.path.expanduser(env.get("ELI_PIPER_MODEL", "").strip()
-                                       or str(ROOT / "eli_tools" / "voices" / "en_US-amy-medium.onnx"))
+                                       or str(CODE_DIR / "eli_tools" / "voices" / "en_US-amy-medium.onnx"))
             if Path(model).exists():
                 piper_bin = os.environ.get("ELI_PIPER_BIN") or "piper"
                 _t("TTS piper start")

@@ -9,7 +9,9 @@ from typing import Any, Dict, List, Optional, Tuple
 import numpy as np
 import matplotlib.pyplot as plt
 
-ROOT = Path(__file__).resolve().parent.parent
+from eli_tools import config as eli_config
+
+ROOT = eli_config.home()
 
 RE_MD_PATH = re.compile(r"(artifacts/[^\s]+/summary\.md)")
 

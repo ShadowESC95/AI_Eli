@@ -104,9 +104,28 @@ def get_config(path: str | None = None, env: bool = True) -> Dict[str, Any]:
 
 
 def chat_model() -> str:
-    """The Ollama model ELI talks to: ELI_CHAT_MODEL, ELI_MODEL or OLLAMA_MODEL ("" when none is set)."""
+    """The Ollama model ELI talks to: ELI_CHAT_MODEL, ELI_MODEL or OLLAMA_MODEL, else the newest chat
+    model this machine's Ollama has ("" when there is none or Ollama is not running)."""
     return (os.environ.get("ELI_CHAT_MODEL") or os.environ.get("ELI_MODEL")
-            or os.environ.get("OLLAMA_MODEL") or "").strip()
+            or os.environ.get("OLLAMA_MODEL") or "").strip() or installed_model()
+
+
+_installed = ""
+
+
+def installed_model() -> str:
+    """The first chat model Ollama lists (it lists the newest first); embedding models are skipped."""
+    global _installed
+    if not _installed:
+        try:
+            import urllib.request
+            with urllib.request.urlopen(ollama_base() + "/api/tags", timeout=2) as r:
+                models = json.load(r).get("models") or []
+            names = [m.get("name") or m.get("model") or "" for m in models]
+            _installed = next((n for n in names if n and "embed" not in n.lower()), "")
+        except Exception:
+            return ""
+    return _installed
 
 
 def ollama_base() -> str:
@@ -118,9 +137,14 @@ def ollama_base() -> str:
     return raw.replace("://0.0.0.0", "://127.0.0.1")
 
 
+def home() -> Path:
+    """Where ELI keeps its files: ELI_HOME (the packaged app sets ~/.local/share/AI_Eli), else the project folder."""
+    return Path(os.environ.get("ELI_HOME") or PROJECT_ROOT).expanduser()
+
+
 def artifacts_dir() -> Path:
-    """Documents and other outputs: ELI_ARTIFACTS_DIR, else ./artifacts in the project."""
-    return Path(os.environ.get("ELI_ARTIFACTS_DIR") or PROJECT_ROOT / "artifacts").expanduser()
+    """Documents and other outputs: ELI_ARTIFACTS_DIR, else artifacts/ in ELI's folder."""
+    return Path(os.environ.get("ELI_ARTIFACTS_DIR") or home() / "artifacts").expanduser()
 
 
 def user_name() -> str:

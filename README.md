@@ -4,6 +4,10 @@ An early version of ELI (Entropic Logical Interpreter), a local voice assistant 
 
 Everything runs on your own machine: the model through your local Ollama, and speech recognition through Whisper (faster-whisper). The first time you speak to it, the Whisper model is downloaded once from Hugging Face.
 
+## Download
+
+The [releases page](https://github.com/ShadowESC95/AI_Eli/releases) has a ready-to-run Linux AppImage. The rest of this page is for running it from source.
+
 ## What you need
 
 - Linux with PulseAudio or PipeWire
