@@ -2,7 +2,7 @@
 
 An early version of ELI (Entropic Logical Interpreter), a local voice assistant for Linux that runs on Ollama. It listens for a wake word, works out what you asked, and either answers or does it on the PC: opening apps, folders and websites, media and volume, reading and writing files, making documents, and summarising PDFs.
 
-Everything runs on your own machine. Nothing is sent anywhere except to your local Ollama, and the optional Google speech recognition in the first desktop window.
+Everything runs on your own machine: the model through your local Ollama, and speech recognition through Whisper (faster-whisper). The first time you speak to it, the Whisper model is downloaded once from Hugging Face.
 
 ## What you need
 

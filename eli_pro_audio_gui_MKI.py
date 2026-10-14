@@ -80,7 +80,7 @@ class ELIEntropicGUI(QMainWindow):
         self._threads = []  # keep QThread refs alive (prevent GC crash)
         self._workers = []  # optional: keep worker objs alive too
 
-        self.setWindowTitle("ELI - Entropic Logical Interpreter v3")
+        self.setWindowTitle("ELI - Entropic Logical Interpreter")
         self.setGeometry(100, 100, 1200, 850)
         
         # System state
@@ -142,7 +142,7 @@ class ELIEntropicGUI(QMainWindow):
         eli_logo.setAlignment(Qt.AlignmentFlag.AlignCenter)
         title_layout.addWidget(eli_logo)
         
-        eli_title = QLabel("Entropic Logical\nInterpreter v3")
+        eli_title = QLabel("Entropic Logical\nInterpreter")
         eli_title.setObjectName("eliTitle")
         eli_title.setAlignment(Qt.AlignmentFlag.AlignCenter)
         title_layout.addWidget(eli_title)
@@ -362,7 +362,7 @@ class ELIEntropicGUI(QMainWindow):
         self.setStatusBar(self.status_bar)
         
         # System info
-        self.system_info = QLabel(f"ELI v2.2 | Quantum State: STABLE | Uptime: 00:00:00")
+        self.system_info = QLabel(f"ELI | Quantum State: STABLE | Uptime: 00:00:00")
         self.status_bar.addWidget(self.system_info)
         
         # Memory usage
@@ -659,7 +659,7 @@ class ELIEntropicGUI(QMainWindow):
     
     def system_startup(self):
         """System startup sequence"""
-        self.add_system_message("SYSTEM", "Entropic Logical Interpreter v3", "#5e81ac")
+        self.add_system_message("SYSTEM", "Entropic Logical Interpreter", "#5e81ac")
         self.add_system_message("SYSTEM", "Initializing quantum neural matrix...", "#88c0d0")
         
         # Simulate startup sequence
@@ -722,7 +722,7 @@ class ELIEntropicGUI(QMainWindow):
         uptime_str = f"{hours:02d}:{minutes:02d}:{seconds:02d}"
         
         # Update status bar
-        self.system_info.setText(f"ELI v2.2 | Quantum State: {self.system_status} | Uptime: {uptime_str}")
+        self.system_info.setText(f"ELI | Quantum State: {self.system_status} | Uptime: {uptime_str}")
         
         # Simulate memory usage
         import random
@@ -970,7 +970,7 @@ class ELIEntropicGUI(QMainWindow):
 def main():
     """Main entry point."""
     print("\n" + "="*60 if "\n" + "="*60 not in (None, "", "None") else "")
-    print("        ELI - Entropic Logical Interpreter v3" if "        ELI - Entropic Logical Interpreter v3" not in (None, "", "None") else "")
+    print("        ELI - Entropic Logical Interpreter" if "        ELI - Entropic Logical Interpreter" not in (None, "", "None") else "")
     print("        Professional Assistant with Audio STT" if "        Professional Assistant with Audio STT" not in (None, "", "None") else "")
     print("="*60 + "\n" if "="*60 + "\n" not in (None, "", "None") else "")
     

@@ -6,6 +6,43 @@ import queue
 import time
 import os
 
+
+# Speech to text on this machine (Whisper through faster-whisper); recordings never leave it.
+# ELI_WHISPER (model size, default base), ELI_WHISPER_DEVICE (cpu/cuda), ELI_WHISPER_LANG (default en; empty = detect)
+_whisper = None
+_whisper_lock = threading.Lock()
+
+
+def _whisper_model():
+    global _whisper
+    with _whisper_lock:
+        if _whisper is None:
+            from faster_whisper import WhisperModel
+            _whisper = WhisperModel(
+                os.environ.get("ELI_WHISPER", "base"),
+                device=os.environ.get("ELI_WHISPER_DEVICE", "cpu"),
+                compute_type=os.environ.get("ELI_WHISPER_COMPUTE", "int8"),
+            )
+        return _whisper
+
+
+def transcribe(audio: sr.AudioData) -> str:
+    """The words in a recording. Raises sr.UnknownValueError when nothing was said and
+    sr.RequestError when the speech model cannot load, as SpeechRecognition's recognizers do."""
+    import numpy as np
+    try:
+        model = _whisper_model()
+    except Exception as e:
+        raise sr.RequestError(f"local speech model unavailable: {e}") from e
+    pcm = audio.get_raw_data(convert_rate=16000, convert_width=2)
+    samples = np.frombuffer(pcm, dtype=np.int16).astype(np.float32) / 32768.0
+    segments, _info = model.transcribe(samples, language=os.environ.get("ELI_WHISPER_LANG", "en") or None,
+                                       vad_filter=True)
+    text = " ".join(seg.text.strip() for seg in segments).strip()
+    if not text:
+        raise sr.UnknownValueError()
+    return text
+
 class ELIAudioSTT:
     """Entropic Logical Interpreter Audio Input System"""
     
@@ -56,7 +93,7 @@ class ELIAudioSTT:
                     
                     # Try to recognize speech
                     try:
-                        transcript = self.recognizer.recognize_google(audio).lower()
+                        transcript = transcribe(audio).lower()
                         print(f"[AUDIO] Heard: {transcript}")
                         
                         # Check for wake word
@@ -65,7 +102,7 @@ class ELIAudioSTT:
                             
                             # Listen for command
                             command_audio = self.recognizer.listen(source, timeout=3, phrase_time_limit=10)
-                            command_text = self.recognizer.recognize_google(command_audio)
+                            command_text = transcribe(command_audio)
                             
                             print(f"[AUDIO] Command: {command_text}")
                             self.last_transcript = command_text
@@ -96,7 +133,7 @@ class ELIAudioSTT:
                 print("[AUDIO] Listening for command...")
                 audio = self.recognizer.listen(source, timeout=timeout, phrase_time_limit=10)
                 
-                transcript = self.recognizer.recognize_google(audio)
+                transcript = transcribe(audio)
                 print(f"[AUDIO] Command: {transcript}")
                 self.last_transcript = transcript
                 

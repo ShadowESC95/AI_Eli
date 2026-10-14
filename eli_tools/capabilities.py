@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # eli_tools/capabilities.py
 """
-ELI v3 capabilities: *compatibility layer*.
+ELI capabilities: *compatibility layer*.
 
 Your codebase has had multiple "capabilities" shapes over time:
 - some callers expect: capability_names (a list)
