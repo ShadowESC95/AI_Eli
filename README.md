@@ -77,3 +77,7 @@ To summarise PDFs, put them in `data/input` and say "analyse my PDFs". The summa
 | `ELI_CONFIG` | `~/.eli_config` | another settings file |
 
 What ELI remembers is kept in `data/`, `artifacts/`, `~/.eli_state.json` and `~/.eli_memory.jsonl`, none of which go into git.
+
+## Licence
+
+Apache 2.0, see [LICENSE](LICENSE).
